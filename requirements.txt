@@ -6,7 +6,7 @@ chromadb
 openai
 langchain
 streamlit
-streamlit_chat
 langchain-community
 faiss-cpu
 schedule
+streamlit-chat

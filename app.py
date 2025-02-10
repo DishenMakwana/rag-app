@@ -46,8 +46,8 @@ def run_scheduler():
 # threading.Thread(target=run_scheduler).start()
 
 def authenticate(username, password):
-    return username == USERNAME and password == PASSWORD
-
+    return True
+    
 def set_page_configuration():
     st.set_page_config(
         "RAG Demo",

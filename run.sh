@@ -7,4 +7,5 @@ fi
 HOST=${HOST:-0.0.0.0}
 PORT=${PORT:-8000}
 
-streamlit run app.py
+# streamlit run app.py
+streamlit run app.py --server.fileWatcherType none
