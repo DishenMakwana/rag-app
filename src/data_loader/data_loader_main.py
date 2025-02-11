@@ -5,10 +5,10 @@ import ollama
 sys.path.append(".")
 import constant as const
 from tqdm import tqdm
-from langchain.document_loaders import WebBaseLoader, PyMuPDFLoader
+from langchain_community.document_loaders import WebBaseLoader, PyMuPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores.faiss import FAISS
+from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 
 load_dotenv()

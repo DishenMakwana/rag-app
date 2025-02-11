@@ -1,11 +1,8 @@
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.prompts import PromptTemplate
-from langchain.chains.qa_with_sources import load_qa_with_sources_chain
-
-from langchain_community.llms.ollama import Ollama
-from langchain.chains import RetrievalQAWithSourcesChain
+from langchain_ollama.llms import OllamaLLM
 from langchain.prompts import PromptTemplate
-from langchain.chains.qa_with_sources import load_qa_with_sources_chain
+from langchain.chains import RetrievalQA
 
 import os
 import sys
@@ -30,37 +27,33 @@ def load_chain(vector_db):
 
     QUESTION: {question}
     =========
-    {summaries}
+    {context}
     =========
 
     ANSWER:
     """
 
     QA_PROMPT = PromptTemplate(
-        template=template, input_variables=["summaries", "question"]
+        template=template, input_variables=["context", "question"]
     )
 
-    # ✅ Use LangChain's ChatOllama to properly integrate with LangChain
-    llm = Ollama(model="deepseek-r1:8b")
+    llm = OllamaLLM(model="deepseek-r1:8b")
 
     # Load the QA chain using the provided prompt
-    qa_chain = load_qa_with_sources_chain(
-        llm,
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=llm,
         chain_type="stuff",
-        prompt=QA_PROMPT,
-    )
-
-    # Create the retrieval chain with your vector database retriever
-    chain = RetrievalQAWithSourcesChain(
-        combine_documents_chain=qa_chain,
         retriever=vector_db.as_retriever(
             search_type="similarity_score_threshold",
             search_kwargs={"score_threshold": 0.5, "k": 5},
         ),
+        chain_type_kwargs={"prompt": QA_PROMPT},
         return_source_documents=True,
     )
 
-    return chain
+    return qa_chain
+
+
 def ollama_generate(prompt):
         response = ollama.generate(model="deepseek-r1:8b", prompt=prompt)
         return response['response']  # Extracts text from Ollama's response
@@ -70,7 +63,7 @@ def final_chain(query, db_name):
         # Load your vector database using your custom load_db function
         vector_db = load_db(db_name=db_name)
         chain = load_chain(vector_db)
-        output = chain({"question": query}, return_only_outputs=True)
+        output = chain.invoke({"query": query}, return_sources=True)
         print(output, 'output')
         return output
     except Exception as e:

@@ -136,8 +136,8 @@ if st.session_state.login_status:
                         print("RESPONSE KEYS: \n\n", response.keys(), "\n\n")
 
                         ans = ""
-                        if response["answer"] != "":
-                            ans = response["answer"]
+                        if response["result"] != "":
+                            ans = response["result"]
                             ans = (
                                 ans.replace("ANSWER:", "")
                                 .replace("More Information:", "\n\n **More Information:**")
@@ -147,12 +147,11 @@ if st.session_state.login_status:
                             placeholder.markdown(full_response)
 
                         refs_lst = ""
-                        if response["sources"] == "":
+                        if len(response["source_documents"]) == 0:
                             pass
                         else:
-                            refs = response["sources"].split(",")
-                            for ref in refs:
-                                refs_lst += f"\n- {ref}"
+                            for ref in response["source_documents"]:
+                                refs_lst += f"\n- {ref}"  # Ensure 'ref' is a string; you may need str(ref)
 
                             full_response = full_response + f"\n\n **References**: \n{refs_lst}"
                             placeholder.markdown(full_response)
